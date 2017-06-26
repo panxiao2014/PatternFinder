@@ -3,6 +3,8 @@
 import FileReader
 import sys
 import pickle
+import numpy as np
+import pandas as pd
 
 #main:
 if len(sys.argv) == 1:
