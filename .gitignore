@@ -3,3 +3,4 @@ testDB
 *.pyc
 *.py~
 *.swp
+streamDB
