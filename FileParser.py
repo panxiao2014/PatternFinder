@@ -31,6 +31,7 @@ reader = FileReader.FileReader()
 
 reader.fileToBeRead = sys.argv[1]
 reader.fileToBeSaved = sys.argv[4]
+reader.fileSize = os.path.getsize(sys.argv[1])
 reader.chunkSize = int(sys.argv[2])
 reader.readOffset = int(sys.argv[3])
 reader.fileHash = np.zeros(reader.tableSize, dtype=np.uint32)

@@ -17,4 +17,12 @@ if len(sys.argv) == 1:
 with open(sys.argv[1], 'rb') as f:
   reader = pickle.load(f)
 
-print("Read chunk size:" + str(reader.chunkSize))
+print("File size:" + str(reader.fileSize) + " Read chunk size:" + str(reader.chunkSize))
+
+dfFile = pd.DataFrame(pd.Series(reader.fileHash))
+dfFile.rename(columns={0:'count'}, inplace=True)
+
+#sort hash index count:
+dfFile.sort_values(['count'], ascending=[False], inplace=True)
+
+print(dfFile.head())
