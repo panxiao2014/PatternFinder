@@ -33,14 +33,18 @@ reader.fileToBeRead = sys.argv[1]
 reader.fileToBeSaved = sys.argv[4]
 reader.fileSize = os.path.getsize(sys.argv[1])
 reader.chunkSize = int(sys.argv[2])
-reader.readOffset = int(sys.argv[3])
+reader.readStartPos = int(sys.argv[3])
 reader.fileHash = np.zeros(reader.tableSize, dtype=np.uint32)
+#use this table to store offset of each hit in the fileHash table
+reader.offsetTable = []
+for i in range(0, reader.tableSize):
+  reader.offsetTable.append([])
 
 #open file as binary:
 f = open(reader.fileToBeRead, "rb")
 
-#jump to offset:
-tempHex = [f.read(1) for i in range(0, reader.readOffset)]
+#jump to start position:
+tempHex = [f.read(1) for i in range(0, reader.readStartPos)]
 
 bytesChunk = np.fromstring(f.read(reader.chunkSize), dtype=np.uint8)
 
@@ -52,7 +56,10 @@ while bytesChunk.size != 0:
   tempHash = bytesChunk.sum() % reader.tableSize
   reader.fileHash[tempHash] += 1
 
-  bytesChunk = np.fromstring(f.read(reader.chunkSize), dtype=np.uint8)
+  #this is not the real offset, but it can be used to calculate offset:
+  reader.offsetTable[tempHash].append(i)
+
+  bytesChunk = np.fromstring(f.read(reader.chunkSize), dtype=np.uint8) #use numpy to do summation is much faster than ordinary array
   i+=1
 stop = timeit.default_timer()
 

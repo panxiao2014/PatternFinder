@@ -19,10 +19,17 @@ with open(sys.argv[1], 'rb') as f:
 
 print("File size:" + str(reader.fileSize) + " Read chunk size:" + str(reader.chunkSize))
 
+#create pandas DataFrame:
 dfFile = pd.DataFrame(pd.Series(reader.fileHash))
 dfFile.rename(columns={0:'count'}, inplace=True)
 
+#add offset table to dataframe:
+dfFile['offset'] = pd.Series(reader.offsetTable)
+
 #sort hash index count:
 dfFile.sort_values(['count'], ascending=[False], inplace=True)
+
+dfFile.reset_index(inplace=True)
+dfFile.rename(columns={'index':'hash_val'}, inplace=True)
 
 print(dfFile.head())
