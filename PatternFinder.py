@@ -9,6 +9,7 @@ import timeit
 import hashlib
 import pickle
 import os
+import binascii
 from pathlib import Path
 
 #main:
@@ -30,18 +31,14 @@ reader.chunkSize = int(sys.argv[2])
 reader.readStartPos = int(sys.argv[3])
 
 
-for i in range(0, reader.TableSize):
-  reader.offsetTable.append([])
-
 #open file as binary:
 f = open(reader.fileToBeRead, "rb")
 
 #jump to start position:
-tempHex = [f.read(1) for i in range(0, reader.readStartPos)]
+f.seek(reader.readStartPos, 0)
 
 bytesChunk = np.fromstring(f.read(reader.chunkSize), dtype=np.uint8)
 i = 0 
-totalSum = 0
 
 start = timeit.default_timer()
 while bytesChunk.size != 0:
@@ -50,7 +47,7 @@ while bytesChunk.size != 0:
   tempHash = bytesChunk.sum() % reader.TableSize
   reader.chunkHashCounter[tempHash] += 1
 
-  #this is not the real offset, but it can be used to calculate offset:
+  #this is not the real offset, should multiply by chunk size to get the offset:
   reader.offsetTable[tempHash].append(i)
 
   bytesChunk = np.fromstring(f.read(reader.chunkSize), dtype=np.uint8) 
@@ -63,8 +60,7 @@ print("======================Preprocessing=======================")
 print("File size:" + str(reader.fileSize) + " Read chunk size:" + str(reader.chunkSize) + " Start offset:" + str(reader.readStartPos))
 print("Read loop: " + str(i))
 print("Hash max count:" + str(reader.chunkHashCounter.max()) + " at index:" + str(reader.chunkHashCounter.argmax()) +" mean count:" + str(reader.chunkHashCounter.mean()))
-print("Cost time: ")
-print(stop-start)
+print("Cost time: " + str(stop-start))
 print("==========================================================\n\n")
 
 
@@ -99,7 +95,7 @@ topBytesStats = {}
 def parseAndGetBytesCount(topBytesStats, dfRow):
   #open file, and jump to the start offset:
   f = open(reader.fileToBeRead, "rb")
-  tempHex = [f.read(1) for i in range(0, reader.readStartPos)]
+  f.seek(reader.readStartPos, 0)
 
   offset = 0
   for i, val in enumerate(dfRow['offset']):
@@ -129,9 +125,13 @@ for i in range(0, reader.TOP_N):
 #create panda DataFrame, to save final result:
 dfStreamStats = (pd.DataFrame(topBytesStats)).transpose()
 dfStreamStats.sort_values(['count'], ascending=[False], inplace=True)
+dfStreamStats.index.names = ['hash']
 
+#temp DataFrame for printing:
+dfPrint = dfStreamStats
+dfPrint['stream'] = dfPrint['stream'].map(binascii.hexlify)
 print("=======================Final result=======================")
-print(dfStreamStats.head())
+print(dfPrint.head())
 print("==========================================================\n")
 
 #add stats to FilerReader, so we can load and parse it:

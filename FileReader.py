@@ -14,6 +14,6 @@ class FileReader:
   #for each chunk read, simply use sum() % TableSize to get a hash value, use a table to save each the number of each hash hit: 
   chunkHashCounter = np.zeros(TableSize, dtype=np.uint32)
 
-  #use this table to store offset of each hit in the chunkHashCounter table, so each element in this table is a table of offset of the hit for the hash:
-  offsetTable = []
+  #use this table to store offset of each hit in the chunkHashCounter table, so each element in this table is a table of offset of the hit for the hash above:
+  offsetTable = [[] for i in range(0, TableSize)]
 
