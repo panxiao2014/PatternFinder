@@ -38,8 +38,8 @@ f = open(reader.fileToBeRead, "rb")
 f.seek(reader.readStartPos, 0)
 
 bytesChunk = np.fromstring(f.read(reader.chunkSize), dtype=np.uint8)
-i = 0 
 
+i = 0 
 start = timeit.default_timer()
 while bytesChunk.size != 0:
   #in preprocessing, simply use sum() % TableSize to get hash
@@ -52,7 +52,6 @@ while bytesChunk.size != 0:
 
   bytesChunk = np.fromstring(f.read(reader.chunkSize), dtype=np.uint8) 
   i+=1
-stop = timeit.default_timer()
 
 f.close()
 
@@ -60,7 +59,6 @@ print("======================Preprocessing=======================")
 print("File size:" + str(reader.fileSize) + " Read chunk size:" + str(reader.chunkSize) + " Start offset:" + str(reader.readStartPos))
 print("Read loop: " + str(i))
 print("Hash max count:" + str(reader.chunkHashCounter.max()) + " at index:" + str(reader.chunkHashCounter.argmax()) +" mean count:" + str(reader.chunkHashCounter.mean()))
-print("Cost time: " + str(stop-start))
 print("==========================================================\n\n")
 
 
@@ -108,7 +106,7 @@ def parseAndGetBytesCount(topBytesStats, dfRow):
     byteStream = f.read(reader.chunkSize)
   
     #get sha hash value, so hash collision will be low possibility:
-    ha = hashlib.sha256(byteStream).hexdigest()
+    ha = hashlib.sha1(byteStream).hexdigest()
 
     if ha not in topBytesStats:
       topBytesStats[ha] = {'stream': byteStream, 'count': 1}
@@ -127,10 +125,13 @@ dfStreamStats = (pd.DataFrame(topBytesStats)).transpose()
 dfStreamStats.sort_values(['count'], ascending=[False], inplace=True)
 dfStreamStats.index.names = ['hash']
 
+stop = timeit.default_timer()
+
 #temp DataFrame for printing:
 dfPrint = dfStreamStats
 dfPrint['stream'] = dfPrint['stream'].map(binascii.hexlify)
 print("=======================Final result=======================")
+print("Cost time: " + str(stop-start) + "\n")
 print(dfPrint.head())
 print("==========================================================\n")
 
