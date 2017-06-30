@@ -4,6 +4,7 @@ import timeit
 import numpy as np
 import pandas as pd
 import binascii
+import FileReader
 
 #create dataframe:
 dfStreamStats = pd.DataFrame(columns = ['count', 'stream'], index = ['hash'])
@@ -29,6 +30,4 @@ dfStreamStats.sort_values('count', ascending=False, inplace=True)
 stop = timeit.default_timer()
 
 print("total time:" + str(stop - start))
-dfPrint = dfStreamStats
-dfPrint['stream'] = dfPrint['stream'].map(binascii.hexlify)
-print(dfPrint.head())
+FileReader.displayStream(dfStreamStats)

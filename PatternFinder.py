@@ -9,7 +9,6 @@ import timeit
 import hashlib
 import pickle
 import os
-import binascii
 from pathlib import Path
 
 #main:
@@ -37,7 +36,7 @@ f = open(reader.fileToBeRead, "rb")
 #jump to start position:
 f.seek(reader.readStartPos, 0)
 
-bytesChunk = np.fromstring(f.read(reader.chunkSize), dtype=np.uint8)
+bytesChunk = np.fromstring(f.read(reader.chunkSize), dtype=np.uint32)
 
 i = 0 
 start = timeit.default_timer()
@@ -50,7 +49,11 @@ while bytesChunk.size != 0:
   #this is not the real offset, should multiply by chunk size to get the offset:
   reader.offsetTable[tempHash].append(i)
 
-  bytesChunk = np.fromstring(f.read(reader.chunkSize), dtype=np.uint8) 
+  #try:
+  bytesChunk = np.fromstring(f.read(reader.chunkSize), dtype=np.uint32)
+  #except ValueError:
+   # break
+    
   i+=1
 
 f.close()
@@ -128,11 +131,9 @@ dfStreamStats.index.names = ['hash']
 stop = timeit.default_timer()
 
 #temp DataFrame for printing:
-dfPrint = dfStreamStats
-dfPrint['stream'] = dfPrint['stream'].map(binascii.hexlify)
 print("=======================Final result=======================")
 print("Cost time: " + str(stop-start) + "\n")
-print(dfPrint.head())
+FileReader.displayStream(dfStreamStats)
 print("==========================================================\n")
 
 #add stats to FilerReader, so we can load and parse it:
