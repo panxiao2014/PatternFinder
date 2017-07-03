@@ -5,7 +5,7 @@ import binascii
 #object to store file read and hash info:
 class FileReader:
   TableSize = 1024000 #length of the hash table, longer one could reduce hash collision
-  TOP_N = 3 #we only want to see some top stream count patterns
+  TOP_N = 5 #we only want to see some top stream count patterns
 
   fileToBeRead = []
   fileToBeSaved = []

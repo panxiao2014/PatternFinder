@@ -44,15 +44,15 @@ while bytesChunk.size != 0:
   #in preprocessing, simply use sum() % TableSize to get hash
   #use numpy to do summation is much faster than ordinary array:
   tempHash = bytesChunk.sum() % reader.TableSize
-  reader.chunkHashCounter[tempHash] += 1
+  reader.chunkHashCounter[int(tempHash)] += 1
 
   #this is not the real offset, should multiply by chunk size to get the offset:
-  reader.offsetTable[tempHash].append(i)
+  reader.offsetTable[int(tempHash)].append(i)
 
-  #try:
-  bytesChunk = np.fromstring(f.read(reader.chunkSize), dtype=np.uint32)
-  #except ValueError:
-   # break
+  try:
+    bytesChunk = np.fromstring(f.read(reader.chunkSize), dtype=np.uint32)
+  except ValueError:
+    break
     
   i+=1
 
