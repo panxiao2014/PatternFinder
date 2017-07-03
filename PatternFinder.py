@@ -143,6 +143,6 @@ reader.dfStreamStats = dfStreamStats
 #save it:
 if Path(reader.fileToBeSaved).is_file():
   os.remove(reader.fileToBeSaved)
-with open(reader.fileToBeSaved, 'wb') as pickler:
+with open(reader.fileToBeSaved, 'w+b') as pickler:
   pickle.dump(reader, pickler, pickle.HIGHEST_PROTOCOL)
 
