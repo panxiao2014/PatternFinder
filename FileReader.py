@@ -5,7 +5,7 @@ import binascii
 #object to store file read and hash info:
 class FileReader:
   TableSize = 1024000 #length of the hash table, longer one could reduce hash collision
-  TOP_N = 5 #we only want to see some top stream count patterns
+  TOP_N = 10 #we only want to see some top stream count patterns
 
   fileToBeRead = []
   fileToBeSaved = []
@@ -23,6 +23,7 @@ class FileReader:
 def displayStream(dfStreamStats):
   #stream may be large, we only display limited bytes:
   bytesToDisplay = 16
+  totalCount = 0
 
   print("Count           Stream")
   
@@ -34,3 +35,7 @@ def displayStream(dfStreamStats):
     stream = binascii.hexlify(stream)
 
     print("%-8d        %s" % (count, str(stream)))
+
+    totalCount += count
+
+  print("Total count: " + str(totalCount))
